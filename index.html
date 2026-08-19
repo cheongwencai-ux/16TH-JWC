@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1220">
+<title>JWC Training Dashboard</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div>
+    <div class="eyebrow">16th Joint Warfighter Course</div>
+    <h1>Training Dashboard</h1>
+  </div>
+  <div class="status-pill">SINGAPORE TIME</div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="date-row">
+      <div>
+        <div id="todayDate" class="big-date">Loading…</div>
+        <div id="liveClock" class="live-clock">--:--:--</div>
+      </div>
+      <div class="course-dates">31 Aug – 25 Sep 2026</div>
+    </div>
+  </section>
+
+  <section class="countdown-card">
+    <div class="section-label">NEXT EVENT</div>
+    <h2 id="nextTitle">Loading next event…</h2>
+    <div id="nextMeta" class="muted"></div>
+    <div id="countdown" class="countdown">--:--:--</div>
+    <div class="progress"><span id="progressBar"></span></div>
+  </section>
+
+  <section class="controls">
+    <button class="day-btn active" data-day="all">All</button>
+    <button class="day-btn" data-day="2026-08-31">31 Aug</button>
+    <button class="day-btn" data-day="2026-09-01">1 Sep</button>
+    <button class="day-btn" data-day="2026-09-02">2 Sep</button>
+    <button class="day-btn" data-day="2026-09-03">3 Sep</button>
+    <button class="day-btn" data-day="2026-09-04">4 Sep</button>
+    <button class="day-btn" data-day="2026-09-07">7 Sep</button>
+    <button class="day-btn" data-day="2026-09-08">8 Sep</button>
+    <button class="day-btn" data-day="2026-09-09">9 Sep</button>
+    <button class="day-btn" data-day="2026-09-10">10 Sep</button>
+    <button class="day-btn" data-day="2026-09-11">11 Sep</button>
+    <button class="day-btn" data-day="2026-09-14">14 Sep</button>
+    <button class="day-btn" data-day="2026-09-15">15 Sep</button>
+    <button class="day-btn" data-day="2026-09-16">16 Sep</button>
+    <button class="day-btn" data-day="2026-09-17">17 Sep</button>
+    <button class="day-btn" data-day="2026-09-18">18 Sep</button>
+    <button class="day-btn" data-day="2026-09-21">21 Sep</button>
+    <button class="day-btn" data-day="2026-09-22">22 Sep</button>
+    <button class="day-btn" data-day="2026-09-24">24 Sep</button>
+    <button class="day-btn" data-day="2026-09-25">25 Sep</button>
+  </section>
+
+  <section>
+    <div class="section-heading">
+      <h2>Event timetable</h2>
+      <span id="eventCount" class="muted"></span>
+    </div>
+    <div id="schedule"></div>
+  </section>
+</main>
+
+<footer>
+  <strong>Source:</strong> 16th JWC Training Programme, 31 Aug–25 Sep 2026.
+  <br><span>Keep this dashboard private if the source programme is not authorised for public distribution.</span>
+</footer>
+<script>
+const EVENTS = [
+  {
+    "date": "2026-08-31",
+    "start": "08:00",
+    "end": "08:30",
+    "title": "Registration",
+    "location": ""
+  },
+  {
+    "date": "2026-08-31",
+    "start": "08:30",
+    "end": "09:30",
+    "title": "Course Opening Briefing",
+    "location": ""
+  },
+  {
+    "date": "2026-08-31",
+    "start": "09:30",
+    "end": "09:50",
+    "title": "Course Commander's Opening Address",
+    "location": ""
+  },
+  {
+    "date": "2026-09-01",
+    "start": "08:00",
+    "end": "08:50",
+    "title": "Team Leadership & Ethics and Values",
+    "location": "Syndicate Rooms / WFH"
+  },
+  {
+    "date": "2026-09-01",
+    "start": "09:00",
+    "end": "09:50",
+    "title": "Team Leadership",
+    "location": ""
+  },
+  {
+    "date": "2026-09-01",
+    "start": "10:00",
+    "end": "11:50",
+    "title": "Leadership Insights by CLD",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-01",
+    "start": "14:00",
+    "end": "14:50",
+    "title": "Singapore's Foreign Policy",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-02",
+    "start": "08:00",
+    "end": "08:50",
+    "title": "Systems and Conceptual Thinking",
+    "location": "Syndicate Rooms / WFH"
+  },
+  {
+    "date": "2026-09-02",
+    "start": "09:00",
+    "end": "13:50",
+    "title": "Systems and Conceptual Thinking — Lecture & Discussion",
+    "location": "ML06 and ML07"
+  },
+  {
+    "date": "2026-09-02",
+    "start": "14:00",
+    "end": "14:50",
+    "title": "SAF Defence Policy Relations",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-03",
+    "start": "09:00",
+    "end": "12:00",
+    "title": "Syn 1–3: Visit to ISD Heritage Centre / Syn 4–6: Prep for SS Presentation",
+    "location": "ISD Heritage Centre / Syndicate Rooms"
+  },
+  {
+    "date": "2026-09-03",
+    "start": "12:00",
+    "end": "13:00",
+    "title": "Lunch",
+    "location": "DH B"
+  },
+  {
+    "date": "2026-09-03",
+    "start": "14:00",
+    "end": "17:00",
+    "title": "Syn 4–6: Visit to ISD Heritage Centre / Syn 1–3: Prep for SS Presentation",
+    "location": "ISD Heritage Centre / Syndicate Rooms"
+  },
+  {
+    "date": "2026-09-04",
+    "start": "08:00",
+    "end": "09:50",
+    "title": "Case Study: The Military in Domestic Operations — Operation Temperer",
+    "location": "SAFTI Field"
+  },
+  {
+    "date": "2026-09-04",
+    "start": "10:00",
+    "end": "11:50",
+    "title": "Konfrontasi",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-04",
+    "start": "12:00",
+    "end": "13:00",
+    "title": "Lunch",
+    "location": "DH B"
+  },
+  {
+    "date": "2026-09-04",
+    "start": "14:00",
+    "end": "15:50",
+    "title": "Regional Security Issues and Implications I",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-04",
+    "start": "16:00",
+    "end": "17:50",
+    "title": "Physical Activity / Course Sports",
+    "location": "LDTS"
+  },
+  {
+    "date": "2026-09-07",
+    "start": "08:00",
+    "end": "08:50",
+    "title": "Vocation Sharing",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-07",
+    "start": "09:00",
+    "end": "09:50",
+    "title": "Weekly Huddle 1",
+    "location": "Syndicate Rooms"
+  },
+  {
+    "date": "2026-09-08",
+    "start": "09:00",
+    "end": "12:00",
+    "title": "The Military in a Multi-National Environment",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-08",
+    "start": "13:00",
+    "end": "13:50",
+    "title": "Understanding our Neighbours — Indonesia and Singapore Relations",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-08",
+    "start": "14:00",
+    "end": "17:50",
+    "title": "SS Presentation / Syndicate Activities",
+    "location": "Syndicate Rooms"
+  },
+  {
+    "date": "2026-09-09",
+    "start": "09:00",
+    "end": "12:00",
+    "title": "Case Study: The Military in Coalition Operations — Operation Inherent Resolve",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-09",
+    "start": "13:00",
+    "end": "13:50",
+    "title": "Understanding our Neighbours — Malaysia and Singapore Relations",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-10",
+    "start": "08:00",
+    "end": "11:50",
+    "title": "Army's Missions & Capabilities",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-10",
+    "start": "12:00",
+    "end": "13:00",
+    "title": "Lunch",
+    "location": "DH B"
+  },
+  {
+    "date": "2026-09-10",
+    "start": "15:00",
+    "end": "16:30",
+    "title": "Dialogue with COMDT SAFTI-MI",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-11",
+    "start": "08:00",
+    "end": "09:50",
+    "title": "MINDEF HQ and Joint Staff — Transforming the SAF",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-11",
+    "start": "10:00",
+    "end": "11:50",
+    "title": "Introduction to Joint Operations",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-11",
+    "start": "13:00",
+    "end": "13:50",
+    "title": "NS Policy Sharing",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-11",
+    "start": "14:00",
+    "end": "15:50",
+    "title": "Introduction to IFC / JTF / Service Technology Applications",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-14",
+    "start": "08:00",
+    "end": "08:50",
+    "title": "RSN's Missions & Capabilities",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-14",
+    "start": "09:00",
+    "end": "09:50",
+    "title": "RSN Application of Technology in CONOPS and Capabilities",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-14",
+    "start": "10:00",
+    "end": "10:50",
+    "title": "DIS Missions & Capabilities",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-14",
+    "start": "11:00",
+    "end": "11:50",
+    "title": "RSAF Missions & Capabilities",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-15",
+    "start": "08:00",
+    "end": "08:50",
+    "title": "SAF's Participation in OOTW PSO and HADR",
+    "location": "Syndicate Rooms"
+  },
+  {
+    "date": "2026-09-15",
+    "start": "09:00",
+    "end": "09:50",
+    "title": "Joint Intelligence CONOPS and Capabilities",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-15",
+    "start": "10:00",
+    "end": "10:50",
+    "title": "Introduction to ISDG",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-15",
+    "start": "11:00",
+    "end": "11:50",
+    "title": "Introduction to RHCC",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-15",
+    "start": "14:00",
+    "end": "15:50",
+    "title": "Introduction to Special Operations",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-16",
+    "start": "08:00",
+    "end": "08:50",
+    "title": "Media Relations & Management",
+    "location": "Syndicate Rooms / WFH"
+  },
+  {
+    "date": "2026-09-16",
+    "start": "09:00",
+    "end": "09:50",
+    "title": "SAF's Participation in OOTW",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-16",
+    "start": "10:00",
+    "end": "10:50",
+    "title": "Overview of MSTF Operations",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-16",
+    "start": "11:00",
+    "end": "11:50",
+    "title": "Overview of ADTF Operations",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-16",
+    "start": "14:00",
+    "end": "14:50",
+    "title": "Overview of Island Defence Operations",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-16",
+    "start": "15:00",
+    "end": "15:50",
+    "title": "PTCO Operations — Case Study",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-17",
+    "start": "08:00",
+    "end": "09:50",
+    "title": "International & Operations Law",
+    "location": "Syndicate Rooms / WFH"
+  },
+  {
+    "date": "2026-09-17",
+    "start": "10:00",
+    "end": "11:50",
+    "title": "PSO and HADR",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-18",
+    "start": "08:00",
+    "end": "09:50",
+    "title": "Cyber Security & Cyber Defence",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-18",
+    "start": "10:00",
+    "end": "11:50",
+    "title": "Artificial Intelligence Systems",
+    "location": "Syndicate Rooms / WFH"
+  },
+  {
+    "date": "2026-09-18",
+    "start": "13:00",
+    "end": "14:50",
+    "title": "Media Relations & Management",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-18",
+    "start": "15:00",
+    "end": "17:50",
+    "title": "Research and Technological Thrusts / Self Learning",
+    "location": "COSMOS / Syndicate Rooms"
+  },
+  {
+    "date": "2026-09-21",
+    "start": "08:00",
+    "end": "08:50",
+    "title": "Weekly Huddle 3",
+    "location": "Syndicate Rooms"
+  },
+  {
+    "date": "2026-09-21",
+    "start": "09:00",
+    "end": "09:50",
+    "title": "Cyber Security & Cyber Defence",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-21",
+    "start": "10:00",
+    "end": "11:50",
+    "title": "SAF Sensors, Imagery and Intelligence Systems",
+    "location": "Syndicate Rooms / WFH"
+  },
+  {
+    "date": "2026-09-22",
+    "start": "08:00",
+    "end": "09:50",
+    "title": "Regional Security Issues and Implications II",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-22",
+    "start": "10:00",
+    "end": "10:50",
+    "title": "Vocation Sharing",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-22",
+    "start": "11:00",
+    "end": "11:50",
+    "title": "International & Operations Law",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-22",
+    "start": "13:00",
+    "end": "13:50",
+    "title": "Artificial Intelligence Systems",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-22",
+    "start": "14:00",
+    "end": "14:50",
+    "title": "SAF C4IT — Joint C4 and Application of Technology in CONOPs and Capabilities",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-22",
+    "start": "15:00",
+    "end": "15:50",
+    "title": "Operational Learning from Contemporary Conflicts",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-22",
+    "start": "16:00",
+    "end": "17:50",
+    "title": "Vocation Sharing",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-24",
+    "start": "08:00",
+    "end": "09:50",
+    "title": "EOC Debrief",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-24",
+    "start": "10:00",
+    "end": "11:50",
+    "title": "Closing Address & Course Result Announcement",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-24",
+    "start": "13:00",
+    "end": "14:50",
+    "title": "Vocation Sharing",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-25",
+    "start": "08:00",
+    "end": "09:50",
+    "title": "Ex STRIVE 2 — Presentation",
+    "location": "Syndicate Rooms / COSMOS"
+  },
+  {
+    "date": "2026-09-25",
+    "start": "10:00",
+    "end": "11:50",
+    "title": "PTCO Presentation: Army / RSAF / RSN",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-25",
+    "start": "13:00",
+    "end": "13:50",
+    "title": "Regional Miltech Capabilities",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-25",
+    "start": "14:00",
+    "end": "15:50",
+    "title": "Dialogue with GOH",
+    "location": "COSMOS"
+  },
+  {
+    "date": "2026-09-25",
+    "start": "16:00",
+    "end": "17:50",
+    "title": "Graduation & Course Reception",
+    "location": "AUDITORIUM"
+  }
+];
+</script>
+<script src="app.js"></script>
+</body>
+</html>
